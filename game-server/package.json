@@ -1,9 +1,14 @@
 {
-    "name":"mabinext",
-    "version":"0.0.1",
-    "private":false,
-    "dependencies":{
-        "pomelo":"1.2.3"
-    }
+  "name": "mabinext",
+  "version": "0.0.1",
+  "private": false,
+  "dependencies": {
+    "mongoose": "^4.5.6",
+    "mongoose-auto-increment": "^5.0.1",
+    "pomelo": "1.2.3",
+    "pomelo-aoi": "^0.3.34",
+    "pomelo-bt": "0.0.1",
+    "pomelo-collection": "^0.1.0",
+    "rx": "^4.1.0"
+  }
 }
-
