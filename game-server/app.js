@@ -6,7 +6,9 @@ var dataApi = require('./app/util/dataApi');
 var playerFilter = require('./app/servers/area/filter/playerFilter');
 
 var scene = require('./app/domain/area/scene');
+
 var areaService = require('./app/services/areaService');
+var chatService = require('./app/services/chatService');
 /**
  * Init app for client.
  */
@@ -56,6 +58,11 @@ app.configure('production|development', 'area', function() {
 
     //Init areaService
     areaService.init();
+});
+
+// Configure for chat server
+app.configure('production|development', 'chat', function() {
+    app.set('chatService', new chatService(app));
 });
 
 // start app

@@ -25,6 +25,7 @@ var Handler = function(app) {
 
 var players = {};
 var movecount = 0;
+
 /**
  * Character enter scene, and response the related information such as
  * CharacterInfo, AreaInfo and MapData to client.
@@ -36,20 +37,19 @@ var movecount = 0;
  */
 Handler.prototype.enter = function(msg, session, next) {
     var area = session.area;
-    var playerId = msg.id;
+    var playerId = session.get("playerId");
+    var uid = session.uid;
     var areaId = 1;
     //var areaId = session.get('areaId');
     //var teamId = session.get('teamId') || consts.TEAM.TEAM_ID_NONE;
     //var isCaptain = session.get('isCaptain');
     //var isInTeamInstance = session.get('isInTeamInstance');
     var instanceId = session.get('instanceId');
-    session.set('playerId', playerId);
-    session.pushAll();
     //utils.myPrint("1 ~ EnterScene: areaId = ", areaId);
     utils.myPrint("1 ~ EnterScene: playerId = ", playerId);
     //utils.myPrint("1 ~ EnterScene: teamId = ", teamId);
 
-    PlayerModel.findOne({ id: playerId }, function(err, player) {
+    PlayerModel.findOne({ id: playerId, userId: uid }, function(err, player) {
         if (err || !player) {
             logger.error('Get player failed! ' + err);
             next(new Error('fail to get player form playermodel'), {
@@ -118,6 +118,8 @@ Handler.prototype.enter = function(msg, session, next) {
             });
             return;
         }
+
+        //session.set('serverId', self.app.get('areaIdMap')[player.areaId]);
 
         //if (player.teamId > consts.TEAM.TEAM_ID_NONE) {
         // send player's new info to the manager server(team manager)

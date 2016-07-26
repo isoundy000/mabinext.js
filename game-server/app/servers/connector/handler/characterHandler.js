@@ -45,7 +45,7 @@ Handler.prototype.create = function(msg, session, next) {
                     logger.error('[register] fail to invoke createPlayer for ' + err.stack);
                     next(null, { code: consts.MESSAGE.ERR, error: err });
                 } else {
-                    afterLogin(self.app, msg, session, { id: uid }, player, next);
+                    afterCreated(self.app, msg, session, { id: uid }, player, next);
                 }
             })
         })
@@ -85,7 +85,7 @@ Handler.prototype.create = function(msg, session, next) {
         //	});
 };
 
-var afterLogin = function(app, msg, session, user, player, next) {
+var afterCreated = function(app, msg, session, user, player, next) {
     async.waterfall([
             function(cb) {
                 session.bind(user.id, cb);
@@ -94,8 +94,10 @@ var afterLogin = function(app, msg, session, user, player, next) {
                 //session.set('username', user.name);
                 //session.set('areaId', player.areaId);
                 //session.set('serverId', app.get('areaIdMap')[player.areaId]);
-                session.set('characterName', player.name);
-                session.set('characterId', player._id);
+                session.set('playerName', player.name);
+                session.set('playerId', player.id);
+                var playerIds = session.get('playerIds');
+                playerIds.push(player.id);
                 session.on('closed', onUserLeave);
                 session.pushAll(cb);
             },

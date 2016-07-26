@@ -1,7 +1,7 @@
 var Code = require('../../../../../shared/code');
 var PlayerModel = require('../../../models/playerModel').PlayerModel;
 var async = require('async');
-//var channelUtil = require('../../../util/channelUtil');
+var channelUtil = require('../../../util/channelUtil');
 var utils = require('../../../util/utils');
 var logger = require('pomelo-logger').getLogger(__filename);
 
@@ -39,6 +39,9 @@ Handler.prototype.entry = function(msg, session, next) {
     var password = msg.password;
 
     var uid, players, player;
+    var playerIds = [];
+    var players = [];
+    
     async.waterfall([
             function(cb) {
                 // auth token
@@ -46,7 +49,6 @@ Handler.prototype.entry = function(msg, session, next) {
                 self.app.rpc.auth.authRemote.authByUsernameAndPassword(session, username, password, cb);
             },
             function(code, user, cb) {
-                console.log("auth checked");
                 if (code !== Code.OK) {
                     console.log("auth ok");
                     next(null, { code: code });
@@ -60,13 +62,12 @@ Handler.prototype.entry = function(msg, session, next) {
                 }
 
                 uid = user._id;
-                console.log(uid);
-
                 PlayerModel.find({ userId: user._id }, function(err, result) {
                     if (!err) {
-                        var players = [];
                         for (var i = 0; i < result.length; i++) {
-                            players.push(result[i].getPlainObject());
+                            var playerObj = result[i].getPlainObject();
+                            playerIds.push(result[i].id);
+                            players.push(playerObj);
                         }
                         utils.invokeCallback(cb, null, players);
                     } else {
@@ -75,42 +76,16 @@ Handler.prototype.entry = function(msg, session, next) {
                 });
             },
             function(res, cb) {
-                console.log(" PlayerModel.findById callback");
-                // generate session and register chat status
-
-                console.log(cb);
-
                 players = res;
                 self.app.get('sessionService').kick(uid, cb);
             },
             function(cb) {
-                console.log("session.bind");
-                session.bind(uid, cb);
-                console.log(session);
-                console.log("session.bind(uid, cb)");
-            },
-            function(cb) {
                 console.log(session.settings);
-                if (!players || players.length === 0) {
-                    next(null, { code: Code.OK });
-                    return;
-                } else {
-                    next(null, { code: Code.OK, characters: players });
-                }
-                //player = players[0];
-
-                //session.set('serverId', self.app.get('areaIdMap')[player.areaId]);
-                //session.set('playername', player.name);
-                //session.set('playerId', player.id);
-                // session.on('closed', onUserLeave.bind(null, self.app));
-                // session.pushAll(cb);
-                // console.log("session.pushAll(cb);");
+                session.bind(uid, cb);
             },
-            function(cb) {
-                console.log("chatRemote");
-                //			self.app.rpc.chat.chatRemote.add(session, player.userId, player.name,
-                //				channelUtil.getGlobalChannelName(), cb);
-                cb(null);
+            function(callback) {
+                session.set("playerIds", playerIds);
+                session.pushAll(callback);
             }
         ],
         function(err) {
@@ -119,25 +94,71 @@ Handler.prototype.entry = function(msg, session, next) {
                 next(err, { code: Code.FAIL });
                 return;
             }
-            console.log("finished")
-            next(null, { code: Code.OK, characters: [] });
+            if (!players || players.length === 0) {
+                next(null, { code: Code.OK });
+                return;
+            } else {
+                next(null, { code: Code.OK, players: players });
+            }
         });
 };
+
+Handler.prototype.enter = function(msg, session, next) {
+    var self = this;
+    var playerId = msg.id;
+    var uid = session.uid;
+    var playerIds = session.get("playerIds");
+    var player;
+    if (playerIds && playerIds.indexOf(playerId) != -1) {
+        async.waterfall([function(callback) {
+                PlayerModel.findOne({ id: playerId, userId: uid }, function(err, result) {
+                    if (!err && result) {
+                        utils.invokeCallback(callback, null, result);
+                    } else {
+                        next(err, { code: Code.ENTRY.FA_USER_NOT_EXIST });
+                    }
+                });
+            },
+            function(result, callback) {
+                //session.set('serverId', self.app.get('areaIdMap')[player.areaId]);
+                player = result;
+                session.set('playerName', player.name);
+                session.set('playerId', player.id);
+                session.on('closed', onUserLeave.bind(null, self.app));
+                session.pushAll(callback);
+            },
+            function(callback) {
+                self.app.rpc.chat.chatRemote.add(session, uid, player.name,
+                    channelUtil.getGlobalChannelName(), callback);
+            }
+        ], function(err) {
+            if (err) {
+                console.log(err);
+                next(err, { code: Code.FAIL });
+                return;
+            }
+            console.log("finished")
+            next(null, { code: Code.OK });
+        });
+    } else {
+        next(err, { code: Code.ENTRY.FA_USER_NOT_EXIST });
+    }
+}
 
 var onUserLeave = function(app, session, reason) {
     if (!session || !session.uid) {
         return;
     }
 
-    //	//utils.myPrint('1 ~ OnUserLeave is running ...');
-    //    
-    //	//app.rpc.area.playerRemote.playerLeave(session, {playerId: session.get('playerId'), instanceId: session.get('instanceId')},
-    //    
-    //    function(err){
-    //		if(!!err){
-    //			logger.error('user leave error! %j', err);
-    //		}
-    //	};
+    app.rpc.area.playerRemote.playerLeave(session, {
+            playerId: session.get('playerId'),
+            instanceId: session.get('instanceId')
+        },
+        function(err) {
+            if (!!err) {
+                logger.error('user leave error! %j', err);
+            }
+        });
 
-    //	//app.rpc.chat.chatRemote.kick(session, session.uid, null);
-};
+    app.rpc.chat.chatRemote.kick(session, session.uid, null);
+}

@@ -188,18 +188,18 @@ Instance.prototype.removeEntity = function(entityId) {
     //If the entity is a player, remove it
     if (e.type === 'player') {
         this.getChannel().leave(e.userId, pomelo.app.getServerId());
-        this.aiManager.removeCharacter(e.entityId);
-        this.patrolManager.removeCharacter(e.entityId);
+        //this.aiManager.removeCharacter(e.entityId);
+        //this.patrolManager.removeCharacter(e.entityId);
         this.aoi.removeObject({ id: e.entityId, type: e.type }, { x: e.x, y: e.y });
-        this.actionManager.abortAllAction(entityId);
+        //this.actionManager.abortAllAction(entityId);
 
-        e.forEachEnemy(function(enemy) {
-            enemy.forgetHater(e.entityId);
-        });
+        // e.forEachEnemy(function(enemy) {
+        //     enemy.forgetHater(e.entityId);
+        // });
 
-        e.forEachHater(function(hater) {
-            hater.forgetEnemy(e.entityId);
-        });
+        // e.forEachHater(function(hater) {
+        //     hater.forgetEnemy(e.entityId);
+        // });
 
         this.aoi.removeWatcher(e, { x: e.x, y: e.y }, e.range);
         delete players[e.id];
