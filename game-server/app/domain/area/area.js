@@ -41,12 +41,12 @@ var Instance = function(opts) {
     //this.patrolManager = patrol.createManager({ area: this });
     //this.actionManager = new ActionManager();
 
-    // this.timer = new Timer({
-    //     area: this,
-    //     interval: 100
-    // });
+    this.timer = new Timer({
+        area: this,
+        interval: 100
+    });
 
-    // this.start();
+    this.start();
 };
 
 module.exports = Instance;
@@ -66,7 +66,7 @@ Instance.prototype.start = function() {
 };
 
 Instance.prototype.close = function() {
-    // this.timer.close();
+    this.timer.close();
 };
 
 /**
@@ -187,7 +187,7 @@ Instance.prototype.removeEntity = function(entityId) {
 
     //If the entity is a player, remove it
     if (e.type === 'player') {
-        this.getChannel().leave(e.userId, pomelo.app.getServerId());
+        this.getChannel().leave(e.userId, e.serverId);
         //this.aiManager.removeCharacter(e.entityId);
         //this.patrolManager.removeCharacter(e.entityId);
         this.aoi.removeObject({ id: e.entityId, type: e.type }, { x: e.x, y: e.y });

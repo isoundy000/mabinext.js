@@ -37,11 +37,11 @@ Timer.prototype.tick = function() {
   }
 
   //run all the action
-  area.actionManager.update();
+  //area.actionManager.update();
 
-  area.aiManager.update();
+  //area.aiManager.update();
 
-  area.patrolManager.update();
+  //area.patrolManager.update();
 };
 
 /**

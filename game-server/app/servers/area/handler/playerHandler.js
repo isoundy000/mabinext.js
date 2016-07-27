@@ -74,6 +74,7 @@ Handler.prototype.enter = function(msg, session, next) {
         player.entityId = i++;
         player.areaId = 1;
         player.instanceId = 0;
+        player.range = 100;
         player.serverId = session.frontendId;
         utils.myPrint("2 ~ GetPlayerAllInfo: player.instanceId = ", player.instanceId);
 

@@ -2,6 +2,7 @@ var Code = require('../../../../../shared/code');
 var PlayerModel = require('../../../models/playerModel').PlayerModel;
 var async = require('async');
 var channelUtil = require('../../../util/channelUtil');
+var messageService = require('../../../domain/messageService');
 var utils = require('../../../util/utils');
 var logger = require('pomelo-logger').getLogger(__filename);
 
@@ -41,7 +42,7 @@ Handler.prototype.entry = function(msg, session, next) {
     var uid, players, player;
     var playerIds = [];
     var players = [];
-    
+
     async.waterfall([
             function(cb) {
                 // auth token
@@ -77,15 +78,20 @@ Handler.prototype.entry = function(msg, session, next) {
             },
             function(res, cb) {
                 players = res;
+                console.log("kick " + uid);
+                messageService.pushMessageByUids([{ sid: session.frontendId, uid: uid }],
+                    'onServerKick', {});
                 self.app.get('sessionService').kick(uid, cb);
             },
             function(cb) {
-                console.log(session.settings);
+                console.log("kick OK" + uid);
                 session.bind(uid, cb);
             },
             function(callback) {
                 session.set("playerIds", playerIds);
+                session.on('closed', onUserLeave.bind(null, self.app));
                 session.pushAll(callback);
+                console.log(session.settings);
             }
         ],
         function(err) {
@@ -124,7 +130,6 @@ Handler.prototype.enter = function(msg, session, next) {
                 player = result;
                 session.set('playerName', player.name);
                 session.set('playerId', player.id);
-                session.on('closed', onUserLeave.bind(null, self.app));
                 session.pushAll(callback);
             },
             function(callback) {

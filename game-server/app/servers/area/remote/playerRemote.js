@@ -23,8 +23,6 @@ var exp = module.exports;
  * @api public
  */
 exp.playerLeave = function(args, cb) {
-    console.log("Player Level in Area Server");
-
     var playerId = args.playerId;
     var area = pomelo.app.areaManager.getArea(args.instanceId);
     var player = area.getPlayer(playerId);
