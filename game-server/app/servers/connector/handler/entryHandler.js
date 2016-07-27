@@ -66,9 +66,12 @@ Handler.prototype.entry = function(msg, session, next) {
                 PlayerModel.find({ userId: user._id }, function(err, result) {
                     if (!err) {
                         for (var i = 0; i < result.length; i++) {
-                            var playerObj = result[i].getPlainObject();
+                            var player = result[i].createObject().strip();
+                            player.x = 0;
+                            player.y = 0;
+                            player.z = 0;
                             playerIds.push(result[i].id);
-                            players.push(playerObj);
+                            players.push(player);
                         }
                         utils.invokeCallback(cb, null, players);
                     } else {

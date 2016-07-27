@@ -32,7 +32,7 @@ exp.addEvent = function(entity) {
 function addSaveEvent(player) {
     var app = pomelo.app;
     player.on('save', function() {
-        app.get('sync').exec('playerSync.updatePlayer', player.id, player.getPlainObject());
+        app.get('sync').exec('playerSync.updatePlayer', player.id, player.strip());
     });
 
     player.bag.on('save', function() {

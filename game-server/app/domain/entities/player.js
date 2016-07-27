@@ -28,8 +28,8 @@ var Player = function(opts) {
     Character.call(this, opts);
     this.id = Number(opts.id);
     this.type = EntityType.PLAYER;
-    // this.userId = opts.userId;
-    // this.name = opts.name;
+    this.userId = opts.userId;
+    this.name = opts.name;
     // this.equipments = opts.equipments;
     // this.bag = opts.bag;
     // this.skillPoint = opts.skillPoint || 0;
@@ -41,7 +41,7 @@ var Player = function(opts) {
     // }
     // this.roleData = dataApi.role.findById(this.kindId);
     // this.curTasks = opts.curTasks;
-    // this.range = opts.range || 2;
+    this.range = opts.range || 2;
     // // player's team id, default 0(not in any team).
     // this.teamId = consts.TEAM.TEAM_ID_NONE;
     // // is the team captain, default false
@@ -345,52 +345,53 @@ module.exports = Player;
 //     task.save();
 // };
 
-// //Convert player' state to json and return
-// Player.prototype.strip = function() {
-//     return {
-//         id: this.id,
-//         entityId: this.entityId,
-//         name: this.name,
-//         kindId: this.kindId,
-//         kindName: this.kindName,
-//         type: this.type,
-//         x: Math.floor(this.x),
-//         y: Math.floor(this.y),
-//         hp: this.hp,
-//         mp: this.mp,
-//         maxHp: this.maxHp,
-//         maxMp: this.maxMp,
-//         level: this.level,
-//         experience: this.experience,
-//         attackValue: this.attackValue,
-//         defenceValue: this.defenceValue,
-//         walkSpeed: this.walkSpeed,
-//         attackSpeed: this.attackSpeed,
-//         areaId: this.areaId,
-//         hitRate: this.hitRate,
-//         dodgeRate: this.dodgeRate,
-//         nextLevelExp: this.nextLevelExp,
-//         skillPoint: this.skillPoint,
-//         teamId: this.teamId,
-//         isCaptain: this.isCaptain
-//     };
-// };
+//Convert player' state to json and return
+Player.prototype.strip = function() {
+    return {
+        id: this.id,
+        entityId: this.entityId,
+        name: this.name,
+        kindId: this.kindId,
+        kindName: this.kindName,
+        type: this.type,
+        x: Math.floor(this.x),
+        y: Math.floor(this.y),
+        z: Math.floor(this.z),
+        hp: this.hp,
+        mp: this.mp,
+        maxHp: this.maxHp,
+        maxMp: this.maxMp,
+        level: this.level,
+        experience: this.experience,
+        attackValue: this.attackValue,
+        defenceValue: this.defenceValue,
+        walkSpeed: this.walkSpeed,
+        attackSpeed: this.attackSpeed,
+        areaId: this.areaId,
+        hitRate: this.hitRate,
+        dodgeRate: this.dodgeRate,
+        nextLevelExp: this.nextLevelExp,
+        skillPoint: this.skillPoint,
+        teamId: this.teamId,
+        isCaptain: this.isCaptain
+    };
+};
 
-// /**
-//  * Get the whole information of player, contains tasks, bag, equipments information.
-//  *
-//  *	@return {Object}
-//  *	@api public
-//  */
-// Player.prototype.getInfo = function() {
-//     var playerData = this.strip();
-//     playerData.bag = this.bag.getData();
-//     playerData.equipments = this.equipments;
-//     playerData.fightSkills = this.getFightSkillData();
-//     playerData.curTasks = this._getCurTasksInfo();
+/**
+ * Get the whole information of player, contains tasks, bag, equipments information.
+ *
+ *	@return {Object}
+ *	@api public
+ */
+Player.prototype.getInfo = function() {
+    var playerData = this.strip();
+    //playerData.bag = this.bag.getData();
+    //playerData.equipments = this.equipments;
+    //playerData.fightSkills = this.getFightSkillData();
+    //playerData.curTasks = this._getCurTasksInfo();
 
-//     return playerData;
-// };
+    return playerData;
+};
 
 // //Check out the haters and judge the entity given is hated or not
 // Player.prototype.isHate = function(entityId) {
@@ -490,36 +491,36 @@ module.exports = Player;
 //     return reTasks;
 // };
 
-// /**
-//  * Parse String to json.
-//  * It covers object' method
-//  *
-//  * @param {String} data
-//  * @return {Object}
-//  * @api public
-//  */
-// Player.prototype.toJSON = function() {
-//     return {
-//         id: this.id,
-//         entityId: this.entityId,
-//         name: this.name,
-//         kindId: this.kindId,
-//         kindName: this.kindName,
-//         type: this.type,
-//         x: this.x,
-//         y: this.y,
-//         hp: this.hp,
-//         mp: this.mp,
-//         maxHp: this.maxHp,
-//         maxMp: this.maxMp,
-//         level: this.level,
-//         walkSpeed: this.walkSpeed,
-//         areaId: this.areaId,
-//         range: this.range,
-//         teamId: this.teamId,
-//         isCaptain: this.isCaptain
-//     };
-// };
+/**
+ * Parse String to json.
+ * It covers object' method
+ *
+ * @param {String} data
+ * @return {Object}
+ * @api public
+ */
+Player.prototype.toJSON = function() {
+    return {
+        id: this.id,
+        entityId: this.entityId,
+        name: this.name,
+        kindId: this.kindId,
+        kindName: this.kindName,
+        type: this.type,
+        x: this.x,
+        y: this.y,
+        hp: this.hp,
+        mp: this.mp,
+        maxHp: this.maxHp,
+        maxMp: this.maxMp,
+        level: this.level,
+        walkSpeed: this.walkSpeed,
+        areaId: this.areaId,
+        range: this.range,
+        teamId: this.teamId,
+        isCaptain: this.isCaptain
+    };
+};
 
 // /**
 //  * Parse String to json for joining a team.

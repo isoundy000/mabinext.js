@@ -1,4 +1,5 @@
 var autoIncrement = require('mongoose-auto-increment');
+var player = require('../domain/entities/player');
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     availablePlayerStatuses = [
@@ -26,15 +27,8 @@ var mongoose = require('mongoose'),
 
 PlayerModel.plugin(autoIncrement.plugin, { model: 'Player', field: 'id' });
 
-PlayerModel.methods.getPlainObject = function() {
-    return {
-        Id: this.id,
-        Name: this.name,
-        Range: 100,
-        x : this.x,
-        y : this.y,
-        z : this.z
-    }
+PlayerModel.methods.createObject = function() {
+    return new player(this);
 }
 
 exports.PlayerModel = mongoose.model('Player', PlayerModel);

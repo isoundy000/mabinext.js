@@ -46,11 +46,11 @@ Handler.prototype.enter = function(msg, session, next) {
     //var isInTeamInstance = session.get('isInTeamInstance');
     var instanceId = session.get('instanceId');
     //utils.myPrint("1 ~ EnterScene: areaId = ", areaId);
-    utils.myPrint("1 ~ EnterScene: playerId = ", playerId);
+    console.log("1 ~ EnterScene: playerId = " + playerId);
     //utils.myPrint("1 ~ EnterScene: teamId = ", teamId);
 
-    PlayerModel.findOne({ id: playerId, userId: uid }, function(err, player) {
-        if (err || !player) {
+    PlayerModel.findOne({ id: playerId, userId: uid }, function(err, result) {
+        if (err || !result) {
             logger.error('Get player failed! ' + err);
             next(new Error('fail to get player form playermodel'), {
                 route: msg.route,
@@ -60,6 +60,8 @@ Handler.prototype.enter = function(msg, session, next) {
         }
 
         var p = formula.getRandomPosition(5, 20);
+        var player = result.createObject();
+        console.log(JSON.stringify(player));
         player.x = p.x;
         player.y = 0;
         player.z = p.y;
@@ -70,11 +72,8 @@ Handler.prototype.enter = function(msg, session, next) {
         //player.isInTeamInstance = isInTeamInstance;
         //player.instanceId = instanceId;
         // areaId = player.areaId;
-        player.type = 'player';
-        player.entityId = i++;
         player.areaId = 1;
         player.instanceId = 0;
-        player.range = 100;
         player.serverId = session.frontendId;
         utils.myPrint("2 ~ GetPlayerAllInfo: player.instanceId = ", player.instanceId);
 
@@ -90,21 +89,20 @@ Handler.prototype.enter = function(msg, session, next) {
         //     player.y = pos.y;
         // }
         // temporary code
-        var playerObject = player.getPlainObject();
         var data = {
-            entities: area.getAreaInfo({ x: player.x, y: player.z }, playerObject.Range),
-            player: playerObject,
-            // map: {
-            //     name: map.name,
-            //     width: map.width,
-            //     height: map.height,
-            //     tileW: map.tileW,
-            //     tileH: map.tileH,
-            //     weightMap: map.collisions
-            // }
+            entities: area.getAreaInfo({ x: player.x, y: player.z }, player.range),
+            player: player.getInfo()
+                // map: {
+                //     name: map.name,
+                //     width: map.width,
+                //     height: map.height,
+                //     tileW: map.tileW,
+                //     tileH: map.tileH,
+                //     weightMap: map.collisions
+                // }
         };
         console.log(session.settings);
-        // utils.myPrint("1.5 ~ GetPlayerAllInfo data = ", JSON.stringify(data));
+        //utils.myPrint("1.5 ~ GetPlayerAllInfo data = ", JSON.stringify(data));
         next(null, data);
 
         //utils.myPrint("2 ~ GetPlayerAllInfo player.teamId = ", player.teamId);

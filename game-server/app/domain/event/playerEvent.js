@@ -14,7 +14,7 @@ exp.addEventForPlayer = function(player) {
     player.on('upgrade', function() {
         logger.debug('event.onUpgrade: ' + player.level + ' id: ' + player.id);
         var uid = { uid: player.userId, sid: player.serverId };
-        messageService.pushMessageToPlayer(uid, 'onUpgrade', player.getPlainObject());
+        messageService.pushMessageToPlayer(uid, 'onUpgrade', player.strip());
     });
 
     /**

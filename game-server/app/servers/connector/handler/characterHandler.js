@@ -78,7 +78,7 @@ Handler.prototype.create = function(msg, session, next) {
         //						next(null, {code: consts.MESSAGE.ERR, error:err});
         //						return;
         //					}
-        //					afterLogin(self.app, msg, session, {id: uid}, player.getPlainObject(), next);
+        //					afterLogin(self.app, msg, session, {id: uid}, player.strip(), next);
         //				});
         //			}
         //		});
@@ -112,7 +112,7 @@ var afterCreated = function(app, msg, session, user, player, next) {
                 next(null, { code: consts.MESSAGE.ERR });
                 return;
             }
-            next(null, { code: consts.MESSAGE.RES, user: user, character: player.getPlainObject() });
+            next(null, { code: consts.MESSAGE.RES, user: user, character: player.strip() });
         });
 };
 

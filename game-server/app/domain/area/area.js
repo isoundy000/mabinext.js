@@ -148,7 +148,7 @@ Instance.prototype.addEntity = function(e) {
         users[e.userId] = e.id;
 
         this.playerNum++;
-        utils.myPrint('e = ', JSON.stringify(e));
+        //utils.myPrint('e = ', JSON.stringify(e));
         utils.myPrint('e.teamId = ', JSON.stringify(e.teamId));
         utils.myPrint('e.isCaptain = ', JSON.stringify(e.isCaptain));
     } else if (e.type === EntityType.MOB) {
